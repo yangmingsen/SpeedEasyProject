@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<h1> file upload </h1>
+
+<form method="POST" enctype="multipart/form-data" id="fileForm">
+    <input type="file" name="files"  multiple="multiple" /><br/><br/>
+    <input type="button" th:value="提交" id="upload"  />
+</form>
+
+
+<h1>The Result</h1>
+<pre>
+    <span id="result"></span>
+</pre>
+
+<script type="text/javascript" src="webjars/jquery/2.2.4/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+    $(function () {
+        $("#upload").click(function () {
+            var formData = new FormData($('#fileForm')[0]);
+            $.ajax({
+                type: 'post',
+                url: "http://localhost:8080/upload/files",
+                data: formData,
+                cache: false,
+                async: false,
+                timeout: 600000,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    $("#result").text(data);
+                    console.log("SUCCESS : ", data);
+
+                },
+                error: function (e) {
+                    $("#result").text(e.responseText);
+                    console.log("ERROR : ", e);
+
+                }
+
+            });
+        });
+    });
+
+
+</script>
+
+</body>
+
+
+</html>
