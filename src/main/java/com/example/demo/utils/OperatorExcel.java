@@ -17,6 +17,7 @@ import java.util.ArrayList;
 public class OperatorExcel {
 
     public static String writeExcel(String version, ArrayList<TBILModel> list, String path) {
+        System.out.println("version = [" + version + "], list = [" + list.size() + "], path = [" + path + "]");
         //定义表头
         String[] title = {"企业名称", "企业注册号"};
         //创建excel工作簿

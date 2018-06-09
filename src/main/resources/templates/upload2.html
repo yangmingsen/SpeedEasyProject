@@ -5,7 +5,7 @@
 <h1> file upload </h1>
 
 <form method="POST" enctype="multipart/form-data" id="fileForm">
-    <input type="file" name="files"  multiple="multiple" /><br/><br/>
+    <input type="file" name="file" /><br/><br/>
     <input type="button" th:value="提交" id="upload"  />
 </form>
 
@@ -24,11 +24,11 @@
             var formData = new FormData($('#fileForm')[0]);
             $.ajax({
                 type: 'post',
-                url: "http://localhost:8080/upload/files",
+                url: "http://localhost:8080/upload/file",
                 data: formData,
                 cache: false,
-                async: false,
-                timeout: 600000,
+                async: true,
+                timeout: 1000000,
                 processData: false,
                 contentType: false,
                 success: function (data) {

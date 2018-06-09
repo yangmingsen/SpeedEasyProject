@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -86,8 +87,9 @@ public class UploadFileController {
 
     }
 
-    @PostMapping("/file") // //new annotation since 4.3
-    public ResponseData singleFileUpload(@RequestParam("file") MultipartFile file) {
+    @PostMapping("/file")
+    public ResponseData singleFileUpload(@RequestParam("file") MultipartFile file)  throws Exception {
+        System.out.println("okkkkkkkkkkkkkkk");
 
         if (file.isEmpty()) {
             return new ResponseData(ExceptionMsg.FileEmpty);
@@ -102,18 +104,44 @@ public class UploadFileController {
             //return new ResponseEntity("上传出错", HttpStatus.OK);
         }
 
-        String unzipPath = ZipHelper.unZipFiles();
+        StringBuffer res = new StringBuffer();
+        ArrayList towrite = new ArrayList<TBILModel>();
+
+        String unzipPath = ZipHelper.unZipFiles(new File(UPLOADED_FOLDER + file.getOriginalFilename()),UPLOADED_FOLDER+"zip/");
+
+        System.out.println("unpath = "+unzipPath);
+
+        File tmf = new File(unzipPath);
+        File [] tmf2 = tmf.listFiles();
 
         System.out.println("Ok start OCR ");
         long start = System.currentTimeMillis();
-        String res = StartOCR.getOCRText(UPLOADED_FOLDER+file.getOriginalFilename());
+
+        for(File f: tmf2) {
+
+            if(!f.getName().endsWith(".png")) {
+                continue;
+            }
+            String tmpRes = StartOCR.getOCRText(f.getPath());
+            String [] tmpSplit = tmpRes.split("\n");
+            towrite.add( new TBILModel(tmpSplit[0].split(":")[1], tmpSplit[1].split(":")[1]) );
+
+            res.append(tmpRes);
+        }
         long end = System.currentTimeMillis();
         System.out.println("Time-consuming:"+((float)(end-start)/1000.0f)+"秒");
 
+        String resUrl =unzipPath.substring(unzipPath.lastIndexOf('/')+1);
+        System.out.println("execute EXCel res = "+ExcelFOLDER2+resUrl);
 
-        return new ResponseData("0005143","3333333333333333333");
+        OperatorExcel.writeExcel("2007",towrite,ExcelFOLDER2+resUrl);
+
+        System.out.println("url = "+resUrl+".xlsx");
+        return new ResponseData("000510",resUrl+".xlsx");
 
     }
+
+
 
     @RequestMapping("/test")
     public TBILModel getTsetJson() {
