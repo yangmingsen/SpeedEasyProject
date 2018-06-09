@@ -19,8 +19,8 @@ public class ZipHelper {
     public static String unZipFiles(File zipFile, String descDir) throws IOException {
 
         ZipFile zip = new ZipFile(zipFile,Charset.forName("UTF-8"));//解决中文文件夹乱码
-        String name = zip.getName().substring(zip.getName().lastIndexOf('/')+1, zip.getName().lastIndexOf('.'));
-        String mainDirec = descDir+name+DateHelpler.getDateNow().replaceAll(" ","")+System.currentTimeMillis();
+
+        String mainDirec = descDir+DateHelpler.getDateNow().replaceAll(" ","")+System.currentTimeMillis();
 
         File pathFile = new File(mainDirec);
         if (!pathFile.exists()) {
@@ -29,7 +29,17 @@ public class ZipHelper {
 
         for (Enumeration<? extends ZipEntry> entries = zip.entries(); entries.hasMoreElements();) {
             ZipEntry entry = (ZipEntry) entries.nextElement();//获取一个文件对象
-            String zipEntryName = entry.getName().substring(entry.getName().lastIndexOf('/'));//获取压缩文件名字
+
+            String zipEntryName = "";
+            if(entry.getName().lastIndexOf('/') == -1) {//如果当前压缩包下就是文件
+                zipEntryName = "/"+entry.getName();
+            } else {
+                zipEntryName = entry.getName().substring(entry.getName().lastIndexOf('/'));//获取压缩文件名字
+            }
+
+            System.out.println("outPath = "+mainDirec+zipEntryName);
+
+
             InputStream in = zip.getInputStream(entry);//将zip文件推入输入流中
             String outPath = (mainDirec+zipEntryName);
 

@@ -39,9 +39,6 @@ public class UploadFileController {
     // Multiple file upload
     @PostMapping("/files")
     public ResponseData uploadFileMulti(@RequestParam("files") MultipartFile[] uploadfiles) {
-//
-//        String uploadedFileName = Arrays.stream(uploadfiles).map(x -> x.getOriginalFilename())
-//                .filter(x -> !StringUtils.isEmpty(x)).collect(Collectors.joining(" , "));
 
         if (uploadfiles.length == 0 ) {
             return new ResponseData(ExceptionMsg.FileEmpty);
@@ -89,7 +86,8 @@ public class UploadFileController {
 
     @PostMapping("/file")
     public ResponseData singleFileUpload(@RequestParam("file") MultipartFile file)  throws Exception {
-        System.out.println("okkkkkkkkkkkkkkk");
+        System.out.println("okkkkkkkkkkkkkkk  fileName = "+file.getOriginalFilename()+
+        "   fileLength = "+file.getSize());
 
         if (file.isEmpty()) {
             return new ResponseData(ExceptionMsg.FileEmpty);
@@ -100,9 +98,12 @@ public class UploadFileController {
             Path path = Paths.get(UPLOADED_FOLDER + file.getOriginalFilename());
             Files.write(path, bytes);
         } catch (IOException e) {
+            System.out.println("写入出错!!!!!!!!!!!");
             e.printStackTrace();
             //return new ResponseEntity("上传出错", HttpStatus.OK);
         }
+
+        System.out.println("in 30 ");
 
         StringBuffer res = new StringBuffer();
         ArrayList towrite = new ArrayList<TBILModel>();

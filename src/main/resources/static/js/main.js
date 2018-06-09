@@ -25,7 +25,7 @@ function fire_ajax_submit() {
     $.ajax({
         type: "POST",
         enctype: 'multipart/form-data',
-        url: "/api/upload/multi/model",
+        url: "http://localhost:8080/upload/files",
         data: data,
         //http://api.jquery.com/jQuery.ajax/
         //https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects
