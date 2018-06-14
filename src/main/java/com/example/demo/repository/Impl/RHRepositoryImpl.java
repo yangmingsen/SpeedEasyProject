@@ -17,13 +17,13 @@ public class RHRepositoryImpl implements RHRepository {
 
     @Override
     public List<ResultHistory> findRHListByCno(String Cno) {
-        return jdbcTemplate.query("select * from Resulthistory where Cno=?",
+        return jdbcTemplate.query("select * from Resulthistory where cno=?",
                 new Object[]{Cno}, new BeanPropertyRowMapper(ResultHistory.class));
     }
 
     @Override
     public int add(ResultHistory newRH) {
-        return jdbcTemplate.update("insert into Resulthistory (Cno, filePath,regcTime) VALUES (?,?,?)",
+        return jdbcTemplate.update("insert into Resulthistory (cno, filePath,regcTime) VALUES (?,?,?)",
                 newRH.getCno(), newRH.getFilePath(), newRH.getRegcTime());
     }
 }

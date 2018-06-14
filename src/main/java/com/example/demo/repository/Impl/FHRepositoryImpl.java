@@ -17,7 +17,7 @@ public class FHRepositoryImpl implements FHRepository {
 
     @Override
     public List<FileHistory> findFHListByCno(String Cno) {
-        List<FileHistory> res = jdbcTemplate.query("select * from Filehistory where Cno=?",
+        List<FileHistory> res = jdbcTemplate.query("select * from Filehistory where cno=?",
                 new Object[]{Cno},new BeanPropertyRowMapper(FileHistory.class));
         if(res != null && res.size()>0) {
             return res;
@@ -28,7 +28,7 @@ public class FHRepositoryImpl implements FHRepository {
 
     @Override
     public int add(FileHistory newFH) {
-        return jdbcTemplate.update("insert into Filehistory (Cno,filePath,uploadTime)values(?,?,?)",
+        return jdbcTemplate.update("insert into Filehistory (cno,filePath,uploadTime)values(?,?,?)",
                 newFH.getCno(),newFH.getFilePath(),newFH.getUploadTime());
     }
 

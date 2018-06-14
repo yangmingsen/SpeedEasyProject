@@ -33,13 +33,14 @@ public class ImageController {
     @RequestMapping(value = "/usr")
     public void queryPic(HttpServletRequest req, HttpServletResponse res) throws IOException {
 
-        TokenHelper toh = new TokenHelper(req.getHeader(Const.JWT_HEADER));
-        if(toh.tokenExpIsFailed()) {//如果token时间戳过期
-            return ;
-        }
+//        TokenHelper toh = new TokenHelper(req.getHeader(Const.JWT_HEADER));
+//        if(toh.tokenExpIsFailed()) {//如果token时间戳过期
+//            return ;
+//        }
 
         res.setContentType("image/jpeg");
-        FileInputStream is = new FileInputStream("/home/yms/Pictures/PHoto/"+toh.getTokenUser()+".jpg");
+       // FileInputStream is = new FileInputStream("/home/yms/Pictures/PHoto/"+toh.getTokenUser()+".jpg");
+        FileInputStream is = new FileInputStream("/home/yms/Pictures/PHoto/"+"123456@qq.com"+".jpg");
 
         if (is != null){
             int i = is.available(); // 得到文件大小

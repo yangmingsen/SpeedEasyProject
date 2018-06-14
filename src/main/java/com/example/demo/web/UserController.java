@@ -96,6 +96,19 @@ public class UserController {
         return new ResponseData(ExceptionMsg.SUCCESS);
     }
 
+    /**
+     *返回用户信息接口
+     * @param req
+     * @return
+     */
+    @RequestMapping("/info")
+    public User getUserInfo(HttpServletRequest req) {
+        TokenHelper toh = new TokenHelper(req.getHeader(Const.JWT_HEADER));
+        User usr = userRepository.findUsersByCno(toh.getTokenUser());
+        usr.setCpasd("");
+        return usr;
+    }
+
 
 
 }

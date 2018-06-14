@@ -49,7 +49,7 @@ public class HistoryController {
      */
     @RequestMapping("/excelfile")
     public List<ResultHistory> getResultHistory(HttpServletRequest req) {
-        TokenHelper toh = new TokenHelper(req.getHeader(Const.JWT_HEADER));
-        return rhRepository.findRHListByCno(toh.getTokenUser());
+       // TokenHelper toh = new TokenHelper(req.getHeader(Const.JWT_HEADER));
+        return rhRepository.findRHListByCno("123456@qq.com");
     }
 }

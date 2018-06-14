@@ -2,12 +2,12 @@ package com.example.demo.domain;
 
 public class FileHistory {
     private int  id;
-    private String Cno;
+    private String cno;
     private String filePath;
     private String uploadTime;
 
     public FileHistory(String cno, String filePath, String uploadTime) {
-        Cno = cno;
+        this.cno = cno;
         this.filePath = filePath;
         this.uploadTime = uploadTime;
     }
@@ -16,11 +16,11 @@ public class FileHistory {
     }
 
     public String getCno() {
-        return Cno;
+        return cno;
     }
 
     public void setCno(String cno) {
-        Cno = cno;
+        this.cno = cno;
     }
 
     public String getFilePath() {
@@ -51,7 +51,7 @@ public class FileHistory {
     public String toString() {
         return "FileHistory{" +
                 "id=" + id +
-                ", Cno='" + Cno + '\'' +
+                ", Cno='" + cno + '\'' +
                 ", filePath='" + filePath + '\'' +
                 ", uploadTime='" + uploadTime + '\'' +
                 '}';

@@ -2,12 +2,12 @@ package com.example.demo.domain;
 
 public class ResultHistory {
     private int id;
-    private String Cno;
+    private String cno;
     private String filePath;
     private String regcTime;
 
     public ResultHistory(String cno, String filePath, String recoTime) {
-        Cno = cno;
+        this.cno = cno;
         this.filePath = filePath;
         this.regcTime = recoTime;
     }
@@ -24,11 +24,11 @@ public class ResultHistory {
     }
 
     public String getCno() {
-        return Cno;
+        return cno;
     }
 
     public void setCno(String cno) {
-        Cno = cno;
+        this.cno = cno;
     }
 
     public String getFilePath() {
@@ -51,7 +51,7 @@ public class ResultHistory {
     public String toString() {
         return "ResultHistory{" +
                 "id=" + id +
-                ", Cno='" + Cno + '\'' +
+                ", Cno='" + cno + '\'' +
                 ", filePath='" + filePath + '\'' +
                 ", recoTime='" + regcTime + '\'' +
                 '}';

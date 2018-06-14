@@ -11,8 +11,7 @@ public class JwtConfig {
     public FilterRegistrationBean jwtFilter() {
         final FilterRegistrationBean registrationBean = new FilterRegistrationBean();
         registrationBean.setFilter(new JwtFilter());
-        registrationBean.addUrlPatterns(
-                "/image/tt");
+        registrationBean.addUrlPatterns("/image/tt");
 
         return registrationBean;
     }

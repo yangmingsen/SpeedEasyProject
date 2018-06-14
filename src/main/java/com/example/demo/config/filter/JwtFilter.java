@@ -27,6 +27,8 @@ public class JwtFilter extends GenericFilterBean {
         // Get authorization from Http request
         final String authHeader = request.getHeader(Const.JWT_HEADER);
 
+        System.out.println("auth = "+authHeader);
+
         // If the Http request is OPTIONS then just return the status code 200
         // which is HttpServletResponse.SC_OK in this code
         if ("OPTIONS".equals(request.getMethod())) {
