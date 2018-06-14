@@ -6,6 +6,8 @@ import com.example.demo.utils.DateHelpler;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.zip.DataFormatException;
 import java.util.zip.ZipEntry;
@@ -59,7 +61,7 @@ public class Demo {
         return mainDirec;
     }
 
-    public static void main(String[] args) {
+    public static void mai1n(String[] args) {
         String zipFilePath = "/home/yms/Documents/OCR/处理后的文件.zip";
         String unzipFilePath = "/home/yms/Documents/OCR/";
         try {
@@ -67,5 +69,9 @@ public class Demo {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+
     }
 }

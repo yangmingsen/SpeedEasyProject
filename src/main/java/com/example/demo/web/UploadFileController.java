@@ -1,19 +1,22 @@
 package com.example.demo.web;
 
+import com.example.demo.domain.FileHistory;
+import com.example.demo.domain.ResultHistory;
 import com.example.demo.domain.TBILModel;
 import com.example.demo.domain.result.ExceptionMsg;
 import com.example.demo.domain.result.ResponseData;
-import com.example.demo.utils.DateHelpler;
-import com.example.demo.utils.OperatorExcel;
-import com.example.demo.utils.StartOCR;
+import com.example.demo.service.IFHService;
+import com.example.demo.service.IRHService;
+import com.example.demo.utils.*;
 
-import com.example.demo.utils.ZipHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
@@ -22,13 +25,23 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
-
+/**
+ * 图片识别接口
+ * Created by yangmingsen on 2018/05/01
+ */
 @RequestMapping("/upload")
 @RestController
 @CrossOrigin
 public class UploadFileController {
+
+    @Autowired
+    private IFHService fhRepository;
+
+    @Autowired
+    private IRHService rhRepository;
 
     private final Logger logger = LoggerFactory.getLogger(UploadFileController.class);
 
@@ -38,18 +51,22 @@ public class UploadFileController {
 
     // Multiple file upload
     @PostMapping("/files")
-    public ResponseData uploadFileMulti(@RequestParam("files") MultipartFile[] uploadfiles) {
+    public ResponseData uploadFileMulti(@RequestParam("files") MultipartFile[] uploadfiles, HttpServletRequest req) {
 
         if (uploadfiles.length == 0 ) {
             return new ResponseData(ExceptionMsg.FileEmpty);
         }
 
-        String resFileUrl = null;
-        if(false) {
-            //获取Session生成 Data+System.curr...+用户名.excel
-        } else {
-           resFileUrl = DateHelpler.getDateNow().replaceAll(" ","")+System.currentTimeMillis();
+        TokenHelper toh = null ;
+        boolean usrIsLogin = false;
+        try {
+            toh = new TokenHelper(req.getHeader(Const.JWT_HEADER));
+            usrIsLogin = true;
+        } catch (Exception e) {
+            System.out.println("错误的token在 UploadFileontroller");
         }
+        //生成文件名字
+        String resFileUrl  = DateHelpler.getDateNow().replaceAll(" ","")+System.currentTimeMillis();
 
         StringBuffer res = new StringBuffer();
         ArrayList towrite = new ArrayList<TBILModel>();
@@ -63,7 +80,16 @@ public class UploadFileController {
                     Path path = Paths.get(UPLOADED_FOLDER+resFileUrl+file.getOriginalFilename());
                     Files.write(path,bytes);
 
-                    String tmpRes = StartOCR.getOCRText(UPLOADED_FOLDER+resFileUrl+file.getOriginalFilename());
+                    String filePath = UPLOADED_FOLDER+resFileUrl+file.getOriginalFilename();
+
+                    if(usrIsLogin) {
+                        fhRepository.add(new FileHistory(toh.getTokenUser(),
+                                resFileUrl+file.getOriginalFilename(),DateHelpler.getDateNow()));//将图片地址加入到数据库中
+                    }
+
+                    String tmpRes = StartOCR.getOCRText(filePath);//识别
+
+                    System.out.println("orc TT =  "+tmpRes);
 
                     String [] tmpSplit = tmpRes.split("\n");
                     towrite.add( new TBILModel(tmpSplit[0].split(":")[1], tmpSplit[1].split(":")[1]) );
@@ -80,7 +106,13 @@ public class UploadFileController {
 
         OperatorExcel.writeExcel("2007",towrite,ExcelFOLDER2+resFileUrl);
 
+        if(usrIsLogin) {
+            rhRepository.add(new ResultHistory(toh.getTokenUser(),resFileUrl+".xlsx",DateHelpler.getDateNow()));
+        }
+
+
         return new ResponseData("000510",resFileUrl+".xlsx");
+
 
     }
 
@@ -124,6 +156,9 @@ public class UploadFileController {
                 continue;
             }
             String tmpRes = StartOCR.getOCRText(f.getPath());
+
+            System.out.println("ocr = "+tmpRes);
+
             String [] tmpSplit = tmpRes.split("\n");
             towrite.add( new TBILModel(tmpSplit[0].split(":")[1], tmpSplit[1].split(":")[1]) );
 
@@ -143,12 +178,5 @@ public class UploadFileController {
     }
 
 
-
-    @RequestMapping("/test")
-    public TBILModel getTsetJson() {
-
-        return new TBILModel("123456","oooo");
-    }
-
-
 }
+

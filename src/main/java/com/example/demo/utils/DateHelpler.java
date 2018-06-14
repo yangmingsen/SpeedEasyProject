@@ -19,4 +19,11 @@ public class DateHelpler {
         return timeStampStr;
     }
 
+    public static String getTokenExpirationDate(Date exp) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(timePattern2);
+        return simpleDateFormat.format(exp);
+    }
+
+    
+
 }

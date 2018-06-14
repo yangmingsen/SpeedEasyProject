@@ -25,8 +25,9 @@ public enum ExceptionMsg {
     LimitPictureSize("000401","图片大小必须小于2M"),
     LimitPictureType("000402","图片格式必须为'jpg'、'png'、'jpge'、'gif'、'bmp'"),
 
+    RequestError("000500","请求出错"),
 
-    RequestError("000500","请求出错")
+    TOKENEXPFAILED("000601","token时间过期")
     ;
    private ExceptionMsg(String code, String msg) {
         this.code = code;

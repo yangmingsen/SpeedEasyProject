@@ -18,7 +18,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User findUsersByCno(String Cno) {
-        List<User> list = jdbcTemplate.query("select * from Client where Cno = ?", new Object[]{Cno}, new BeanPropertyRowMapper(User.class));
+        List<User> list = jdbcTemplate.query("select * from Client where Cno = ?",
+                new Object[]{Cno}, new BeanPropertyRowMapper(User.class));
         if(list!=null && list.size()>0){
            return list.get(0);
         }else{
@@ -31,4 +32,5 @@ public class UserRepositoryImpl implements UserRepository {
         return jdbcTemplate.update("insert into Client (Cno,Cname,Cpasd)values(?,?,?)",
                 newusr.getCno(),newusr.getCname(),newusr.getCpasd());
     }
+
 }

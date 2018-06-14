@@ -4,22 +4,26 @@ package com.example.demo.web;
 import com.example.demo.domain.ReqPerson;
 import com.example.demo.domain.User;
 import com.example.demo.domain.result.ExceptionMsg;
-import com.example.demo.domain.result.Response;
 import com.example.demo.domain.result.ResponseData;
 import com.example.demo.service.IUserService;
+import com.example.demo.utils.Const;
 import com.example.demo.utils.DateHelpler;
+import com.example.demo.utils.TokenHelper;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 
-
+/**
+ * 用户登录注册接口
+ * Created by yangmingsen on 2018/05/01
+ */
 @RequestMapping("/user")
 @CrossOrigin
 @RestController
@@ -28,11 +32,11 @@ public class UserController {
     @Autowired
     IUserService userRepository;
 
-
     @PostMapping("/login")
     public ResponseData login(@RequestBody ReqPerson reqPerson, HttpServletResponse res)  {
 
         System.out.println(reqPerson.getUsername()+" + "+reqPerson.getPassword());
+
        try{
            User loginUser = userRepository.findUsersByCno(reqPerson.getUsername());
            if(loginUser == null) {
@@ -43,14 +47,12 @@ public class UserController {
 
            //创建token令牌
             String jwtToken = Jwts.builder().setSubject(reqPerson.getUsername())
-                   .setExpiration(new Date(System.currentTimeMillis()+7*24*60*60*1000))
-                   .signWith(SignatureAlgorithm.HS256, "secretkey")
+                   .setExpiration(new Date(Const.JWT_TOKEN_EXP))
+                   .signWith(SignatureAlgorithm.HS256, Const.JWT_SECRET_KEY)
                    .compact();
 
-            //添加token令牌到响应头中
-           res.addHeader("Authorization","Bearer "+jwtToken);
-
-           return new ResponseData(ExceptionMsg.SUCCESS);
+           //添加token到返回值中
+           return new ResponseData("0006000","Bearer "+jwtToken);
 
        }catch (Exception e) {
            e.printStackTrace();
@@ -60,19 +62,21 @@ public class UserController {
     }
 
     @PostMapping("/reg")
-    public ResponseData addUser(@RequestBody User newUser) {
+    public ResponseData addUser(@RequestBody ReqPerson newUser) {
+        System.out.println(newUser.toString());
         try {
-            User regUser = userRepository.findUsersByCno(newUser.getCno());
+            User regUser = userRepository.findUsersByCno(newUser.getUsername() );
             if(regUser != null) {
                 return new ResponseData(ExceptionMsg.UserNameUsed);
             }
 
-            regUser.setCno(newUser.getCno());
-            regUser.setCname(newUser.getCname());
-            regUser.setCpasd(newUser.getCpasd());
-            regUser.setCregTime(DateHelpler.getDateNow());
+            User addU = new User();
+            addU.setCno(newUser.getUsername());
+            addU.setCpasd(newUser.getPassword());
+            addU.setCregTime(DateHelpler.getDateNow());
 
-            userRepository.add(regUser);
+          int res =   userRepository.add(addU);
+            System.out.println("Regres = "+res);
 
             return new ResponseData(ExceptionMsg.SUCCESS);
         } catch (Exception e) {
@@ -82,18 +86,16 @@ public class UserController {
     }
 
     @RequestMapping("/tt")
-    public ReqPerson getTest( HttpServletResponse res) {
-        System.out.println("hello wolrd");
-
-        //创建token令牌
-        String jwtToken = Jwts.builder().setSubject("yangmingsen")
-                .setExpiration(new Date(System.currentTimeMillis()+60*1000))
-                .signWith(SignatureAlgorithm.HS256, "secretkey")
-                .compact();
-
-        //添加token令牌到响应头中
-        res.addHeader("Authorization","Bearer "+jwtToken);
-        return new ReqPerson("yangmingsen","1234567");
+    public ResponseData getTest(HttpServletRequest req) {
+        TokenHelper toH = new TokenHelper(req.getHeader(Const.JWT_HEADER));
+        if(toH.tokenExpIsFailed()) {
+            return new ResponseData(ExceptionMsg.TOKENEXPFAILED);
+        }
+        System.out.println("exp = "+DateHelpler.getTokenExpirationDate(toH.getClaims().getExpiration()));
+        System.out.println("用户铭 = "+toH.getClaims().getSubject());
+        return new ResponseData(ExceptionMsg.SUCCESS);
     }
+
+
 
 }

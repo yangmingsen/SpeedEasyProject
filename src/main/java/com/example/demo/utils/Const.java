@@ -8,6 +8,10 @@ import java.io.File;
  */
 public interface Const {
 
+    /**********************************************JWT************************************************/
+    String JWT_SECRET_KEY = "yangmingsen";//秘钥
+    String JWT_HEADER = "Authorization";
+    long JWT_TOKEN_EXP = System.currentTimeMillis()+7*24*60*60*1000;//七天
     /**********************************************分隔符常量************************************************/
 
     String POINT_STR = ".";
