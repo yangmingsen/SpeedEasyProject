@@ -10,7 +10,6 @@ public class TokenHelper {
     private Claims claims;
 
     public TokenHelper(String token)  {
-        System.out.println("token = "+token);
         token = token.substring(7);
         this.claims = Jwts.parser().setSigningKey(Const.JWT_SECRET_KEY).parseClaimsJws(token).getBody();;
     }

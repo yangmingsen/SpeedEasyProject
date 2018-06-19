@@ -43,6 +43,7 @@ public class UploadFileController {
     @Autowired
     private IRHService rhRepository;
 
+
     private final Logger logger = LoggerFactory.getLogger(UploadFileController.class);
 
     //Save the uploaded file to this folder
@@ -53,20 +54,20 @@ public class UploadFileController {
     @PostMapping("/files")
     public ResponseData uploadFileMulti(@RequestParam("files") MultipartFile[] uploadfiles, HttpServletRequest req) {
 
-        if (uploadfiles.length == 0 ) {
+        if (uploadfiles.length == 0 ) {//判断远程文件是否为空
             return new ResponseData(ExceptionMsg.FileEmpty);
         }
 
         TokenHelper toh = null ;
         boolean usrIsLogin = false;
         try {
-            toh = new TokenHelper(req.getHeader(Const.JWT_HEADER));
+            toh = new TokenHelper(req.getHeader(Const.JWT_HEADER));//识别token
             usrIsLogin = true;
         } catch (Exception e) {
             System.out.println("错误的token在 UploadFileontroller");
         }
         //生成文件名字
-        String resFileUrl  = DateHelpler.getDateNow().replaceAll(" ","")+System.currentTimeMillis();
+        String resFileUrl  = DateHelpler.getDateNow().replaceAll(" ","").replaceAll(":","")+System.currentTimeMillis();
 
         StringBuffer res = new StringBuffer();
         ArrayList towrite = new ArrayList<TBILModel>();
@@ -76,20 +77,20 @@ public class UploadFileController {
         try {
             for(MultipartFile file: uploadfiles) {
                 if(!file.isEmpty()) {
+
+                    //将远程图片存入到本地文件中
                     byte [] bytes = file.getBytes();
                     Path path = Paths.get(UPLOADED_FOLDER+resFileUrl+file.getOriginalFilename());
                     Files.write(path,bytes);
 
-                    String filePath = UPLOADED_FOLDER+resFileUrl+file.getOriginalFilename();
+                    String filePath = UPLOADED_FOLDER+resFileUrl+file.getOriginalFilename();//得到文件的绝对路径
 
-                    if(usrIsLogin) {
+                    if(usrIsLogin) {//向数据库写入上传文件记录
                         fhRepository.add(new FileHistory(toh.getTokenUser(),
                                 resFileUrl+file.getOriginalFilename(),DateHelpler.getDateNow()));//将图片地址加入到数据库中
                     }
 
                     String tmpRes = StartOCR.getOCRText(filePath);//识别
-
-                    System.out.println("orc TT =  "+tmpRes);
 
                     String [] tmpSplit = tmpRes.split("\n");
                     towrite.add( new TBILModel(tmpSplit[0].split(":")[1], tmpSplit[1].split(":")[1]) );
@@ -104,22 +105,17 @@ public class UploadFileController {
         long end = System.currentTimeMillis();
         System.out.println("Time-consuming:"+((float)(end-start)/1000.0f)+"秒");
 
-        OperatorExcel.writeExcel("2007",towrite,ExcelFOLDER2+resFileUrl);
+        OperatorExcel.writeExcel("2007",towrite,ExcelFOLDER2+resFileUrl);//生成excel表
 
-        if(usrIsLogin) {
+        if(usrIsLogin) {//向数据库写入Resultexcel地址
             rhRepository.add(new ResultHistory(toh.getTokenUser(),resFileUrl+".xlsx",DateHelpler.getDateNow()));
         }
 
-
         return new ResponseData("000510",resFileUrl+".xlsx");
-
-
     }
 
     @PostMapping("/file")
     public ResponseData singleFileUpload(@RequestParam("file") MultipartFile file)  throws Exception {
-        System.out.println("okkkkkkkkkkkkkkk  fileName = "+file.getOriginalFilename()+
-        "   fileLength = "+file.getSize());
 
         if (file.isEmpty()) {
             return new ResponseData(ExceptionMsg.FileEmpty);
@@ -131,7 +127,6 @@ public class UploadFileController {
             Files.write(path, bytes);
         } catch (IOException e) {
             System.out.println("写入出错!!!!!!!!!!!");
-            e.printStackTrace();
             //return new ResponseEntity("上传出错", HttpStatus.OK);
         }
 

@@ -32,6 +32,12 @@ public class UserController {
     @Autowired
     IUserService userRepository;
 
+    /**
+     * 用户登录
+     * @param reqPerson
+     * @param res
+     * @return
+     */
     @PostMapping("/login")
     public ResponseData login(@RequestBody ReqPerson reqPerson, HttpServletResponse res)  {
 
@@ -51,6 +57,8 @@ public class UserController {
                    .signWith(SignatureAlgorithm.HS256, Const.JWT_SECRET_KEY)
                    .compact();
 
+           System.out.println("logintoken  =" +jwtToken);
+
            //添加token到返回值中
            return new ResponseData("0006000","Bearer "+jwtToken);
 
@@ -61,6 +69,11 @@ public class UserController {
 
     }
 
+    /**
+     * 注册用户
+     * @param newUser
+     * @return
+     */
     @PostMapping("/reg")
     public ResponseData addUser(@RequestBody ReqPerson newUser) {
         System.out.println(newUser.toString());
@@ -76,7 +89,6 @@ public class UserController {
             addU.setCregTime(DateHelpler.getDateNow());
 
           int res =   userRepository.add(addU);
-            System.out.println("Regres = "+res);
 
             return new ResponseData(ExceptionMsg.SUCCESS);
         } catch (Exception e) {

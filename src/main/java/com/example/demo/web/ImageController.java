@@ -6,6 +6,7 @@ import com.example.demo.utils.Const;
 import com.example.demo.utils.TokenHelper;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +23,7 @@ import java.io.*;
 @CrossOrigin
 public class ImageController {
 
-    private static final String PHOTO_PATH = "/home/yms/Documents/SpringBoot/SpeedEasyServer/src/main/resources/";
+    private static final String PHOTO_PATH = "/home/yms/Documents/SpringBoot/SpeedEasyServer/src/main/resources/static/images/";
 
     /***
      * 向客户端响应图片
@@ -31,16 +32,12 @@ public class ImageController {
      * @throws IOException
      */
     @RequestMapping(value = "/usr")
-    public void queryPic(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    public void queryPic( @RequestParam("img") String img, HttpServletRequest req, HttpServletResponse res) throws IOException {
 
-//        TokenHelper toh = new TokenHelper(req.getHeader(Const.JWT_HEADER));
-//        if(toh.tokenExpIsFailed()) {//如果token时间戳过期
-//            return ;
-//        }
-
+        System.out.println("imguser = "+img);
         res.setContentType("image/jpeg");
-       // FileInputStream is = new FileInputStream("/home/yms/Pictures/PHoto/"+toh.getTokenUser()+".jpg");
-        FileInputStream is = new FileInputStream("/home/yms/Pictures/PHoto/"+"123456@qq.com"+".jpg");
+        FileInputStream is = new FileInputStream(PHOTO_PATH+img+".jpg");
+
 
         if (is != null){
             int i = is.available(); // 得到文件大小

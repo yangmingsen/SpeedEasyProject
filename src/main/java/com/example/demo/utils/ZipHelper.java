@@ -31,10 +31,10 @@ public class ZipHelper {
             ZipEntry entry = (ZipEntry) entries.nextElement();//获取一个文件对象
 
             String zipEntryName = "";
-            if(entry.getName().lastIndexOf('/') == -1) {//如果当前压缩包下就是文件
+            if(entry.getName().lastIndexOf(File.separator) == -1) {//如果当前压缩包下就是文件
                 zipEntryName = "/"+entry.getName();
             } else {
-                zipEntryName = entry.getName().substring(entry.getName().lastIndexOf('/'));//获取压缩文件名字
+                zipEntryName = entry.getName().substring(entry.getName().lastIndexOf(File.separator));//获取压缩文件名字
             }
 
             System.out.println("outPath = "+mainDirec+zipEntryName);
@@ -44,7 +44,7 @@ public class ZipHelper {
             String outPath = (mainDirec+zipEntryName);
 
             // 判断路径是否存在,不存在则创建文件路径
-            File file = new File(outPath.substring(0, outPath.lastIndexOf('/')));
+            File file = new File(outPath.substring(0, outPath.lastIndexOf(File.separator)));
             if (!file.exists()) {
                 file.mkdirs();
             }
